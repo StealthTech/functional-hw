@@ -41,28 +41,3 @@ def get_instance_by_id(pk, lst):
 
 def intersection_rank(a, b):
     return len(set(a) & set(b))
-
-
-def estimate_relation_value(student, teacher):
-    value = 0
-
-    # Если любимые темы студента совпадают с нелюбимыми темами преподавателя
-    value += -10 * intersection_rank(student.themes_positive, teacher.themes_negative)
-    # Если любимые темы преподавателя совпадают с нелюбимыми темами студента
-    value += -10 * intersection_rank(teacher.themes_positive, student.themes_negative)
-    # Если любимые темы студента совпадают с любимыми темами преподавателя
-    value += 10 * intersection_rank(student.themes_positive, teacher.themes_positive)
-
-    # Если преподаватель и студент испытывают друг к другу неприятие
-    value += -100 * (
-            intersection_rank(student.teachers_negative, [teacher.pk]) +
-            intersection_rank(teacher.students_negative, [student.pk])
-    )
-
-    # Если преподаватель и студент испытывают друг к другу симпатию
-    value += 100 * (
-            intersection_rank(student.teachers_positive, [teacher.pk]) +
-            intersection_rank(teacher.students_positive, [student.pk])
-    )
-    return value
-

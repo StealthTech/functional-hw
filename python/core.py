@@ -1,6 +1,7 @@
 import os
 
 import utils
+from processing import calculate_relations
 from models import Theme, Teacher, Student
 
 
@@ -22,27 +23,8 @@ if __name__ == '__main__':
     students = utils.extract_models(Student, students_data)
     utils.print_multiline(students[:10])
 
-    # Расчет отношений
-    _students = students
-    lines = []
-    for idx, _student in enumerate(_students):
-        min_students_count = min(map(lambda x: len(x.current_students), teachers))
-        _teachers = filter(lambda x: not x.is_cap_reached and len(x.current_students) == min_students_count, teachers)
+    students, teachers, lines = calculate_relations(students, teachers)
 
-        values = sorted([
-            (_teacher, utils.estimate_relation_value(_student, _teacher))
-            for _teacher in _teachers
-        ], key=lambda x: x[1], reverse=True)
-
-        _teacher, value = values[0]  # обратная деструктуризация
-        _teacher.current_students.append(_student)
-        _student.current_teacher = _teacher
-
-        lines.append('\t'.join(map(str, [
-            idx + 1, _student.pk, _teacher.pk, value
-        ])))
-
-        print(f'{idx + 1} :: pair found :: Оценка {value} :: {_student} // {_teacher}')
     utils.dump(lines, 'output/relations.csv')
 
     print('- ' * 30)
