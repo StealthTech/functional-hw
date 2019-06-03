@@ -47,8 +47,8 @@ def calculate_relations(student_lst, teacher_lst):
         _teacher.current_students.append(_student)
         _student.current_teacher = _teacher
 
-        lines.append('\t'.join(map(str, [
-            idx + 1, _student.pk, _teacher.pk, value
+        lines.append(', '.join(map(str, [
+            _student.pk, _teacher.pk, value
         ])))
 
         print(f'{idx + 1} :: pair found :: Оценка {value} :: {_student} // {_teacher}')
